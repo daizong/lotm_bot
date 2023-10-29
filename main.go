@@ -78,7 +78,7 @@ func startMonitor() {
 
 	log.Println("otherdeed数量:", len(ides))
 	for _, idInfo := range ides {
-		id := int(idInfo.Get("id").Int())
+		otherdeedId := int(idInfo.Get("id").Int())
 		envTier := idInfo.Get("envTier").Int()
 		envSlots := idInfo.Get("envSlots").Array()
 		hunters := 0
@@ -89,7 +89,7 @@ func startMonitor() {
 			}
 		}
 		process := idInfo.Get("goliathProgress").Float()
-		processes[id] = process
+		processes[otherdeedId] = process
 
 		time.Sleep(time.Millisecond * 100)
 		sessionBytes, err := GetDefaultData("POST", api_url+"/land.login", `{
@@ -100,7 +100,7 @@ func startMonitor() {
 			  ]
 			}
 		  }`, map[string]string{
-			"X-Land-Token-Id": strconv.Itoa(id),
+			"X-Land-Token-Id": strconv.Itoa(otherdeedId),
 		})
 
 		if err != nil {
@@ -139,16 +139,16 @@ func startMonitor() {
 			  "sessionToken": "%s"
 			}
 		  }`, sessionToken), map[string]string{
-			"X-Land-Token-Id": strconv.Itoa(id),
+			"X-Land-Token-Id": strconv.Itoa(otherdeedId),
 		})
 		if err != nil {
 			log.Println(err)
 			continue
 		}
 		if len(gjson.GetBytes(boxes, "result.data.json").Array()) > 0 {
-			log.Printf("[%d]有未领取宝箱，游戏链接: https://lotm.otherside.xyz/shattered/otherdeed/%d", id, id)
+			log.Printf("[%d]有未领取宝箱，游戏链接: https://lotm.otherside.xyz/shattered/otherdeed/%d", otherdeedId, otherdeedId)
 
-			url := fmt.Sprintf("https://lotm.otherside.xyz/shattered/otherdeed/%d", id)
+			url := fmt.Sprintf("https://lotm.otherside.xyz/shattered/otherdeed/%d", otherdeedId)
 			osType := runtime.GOOS
 			if osType == "windows" {
 				cmd := exec.Command(`cmd`, `/c`, `start`, url)
@@ -169,7 +169,7 @@ func startMonitor() {
 			  "sessionToken": "%s"
 			}
 		  }`, sessionToken), map[string]string{
-			"X-Land-Token-Id": strconv.Itoa(id),
+			"X-Land-Token-Id": strconv.Itoa(otherdeedId),
 		})
 		if err != nil {
 			log.Println(err)
@@ -180,7 +180,7 @@ func startMonitor() {
 		creature_ability_cooldowns := gjson.GetBytes(sessionInfo, "result.data.json.creature_ability_cooldowns").Array()
 		if !strings.EqualFold(status, "ON_GOING") {
 			log.Println(string(sessionInfo))
-			log.Printf("[%d]status is %s, 游戏链接: https://lotm.otherside.xyz/shattered/otherdeed/%d", id, status, id)
+			log.Printf("[%d]status is %s, 游戏链接: https://lotm.otherside.xyz/shattered/otherdeed/%d", otherdeedId, status, otherdeedId)
 			continue
 		}
 
@@ -208,7 +208,7 @@ func startMonitor() {
 						  "fightLogDuration": 300000
 						}
 					  }`, sessionToken, cardId, abilityId), map[string]string{
-						"X-Land-Token-Id": strconv.Itoa(id),
+						"X-Land-Token-Id": strconv.Itoa(otherdeedId),
 					})
 					if err != nil {
 						log.Println(err)
@@ -217,7 +217,7 @@ func startMonitor() {
 
 					serverProcessTimeMillisecond := gjson.GetBytes(gamePlayInfo, "result.data.json.serverProcessTimeMillisecond").Int()
 					if serverProcessTimeMillisecond == 0 {
-						log.Printf("运行[%s]技能[%s]失败，游戏链接: https://lotm.otherside.xyz/shattered/otherdeed/%d", cardId, abilityId, id)
+						log.Printf("[%d]运行[%s]技能[%s]失败，游戏链接: https://lotm.otherside.xyz/shattered/otherdeed/%d", otherdeedId, cardId, abilityId, otherdeedId)
 						log.Println(string(gamePlayInfo))
 					} else {
 						log.Printf("运行[%s]技能[%s]成功", cardId, abilityId)
@@ -227,7 +227,7 @@ func startMonitor() {
 		}
 
 		leaderBoard, err := GetDefaultData("GET", fmt.Sprintf(`%s/leaderboard.getLeaderboard?input={"json":{"sessionToken":"%s","seasonId":"%s","tier":%d}}`, api_url, sessionToken, season_id, tier), "", map[string]string{
-			"X-Land-Token-Id": strconv.Itoa(id),
+			"X-Land-Token-Id": strconv.Itoa(otherdeedId),
 		})
 		if err != nil {
 			log.Println(err)
@@ -248,7 +248,7 @@ func startMonitor() {
 				totalKills := player.Get("totalKills").Int()
 				hours := currentProgressTime / 1000 / 60 / 60
 				if strings.EqualFold(walletAddress, wallet_addr) && (process > processLog /*|| totalKills > 0*/) {
-					log.Printf("[%d]关卡: %d, 进度: %.2f%%, 时间: %d天%d小时, 环境: %d", id, totalKills+1, process, hours/24, hours%24, envTier)
+					log.Printf("[%d]关卡: %d, 进度: %.2f%%, 时间: %d天%d小时, 环境: %d", otherdeedId, totalKills+1, process, hours/24, hours%24, envTier)
 
 					break
 				}
