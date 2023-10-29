@@ -8,8 +8,10 @@ import (
 	"log"
 	"net/http"
 	"os/exec"
+	"runtime"
 	"strconv"
 	"strings"
+	"syscall"
 	"time"
 
 	browser "github.com/EDDYCJY/fake-useragent"
@@ -33,12 +35,12 @@ func main() {
 	config := string(buf)
 	auth = gjson.Get(config, "auth").String()
 	wallet_addr = gjson.Get(config, "wallet").String()
-	monitorInternalMintues := gjson.Get(config, "monitorInternalMintues").Int()
+	monitorIntervalMintues := gjson.Get(config, "monitorIntervalMintues").Int()
 	processLog = gjson.Get(config, "processLog").Float()
 
 	for {
 		startMonitor()
-		time.Sleep(time.Minute * time.Duration(monitorInternalMintues))
+		time.Sleep(time.Minute * time.Duration(monitorIntervalMintues))
 	}
 }
 
@@ -143,7 +145,19 @@ func startMonitor() {
 		}
 		if len(gjson.GetBytes(boxes, "result.data.json").Array()) > 0 {
 			log.Printf("[%d]有未领取宝箱，游戏链接: https://lotm.otherside.xyz/shattered/otherdeed/%d", id, id)
-			exec.Command(`open`, fmt.Sprintf("https://lotm.otherside.xyz/shattered/otherdeed/%d", id)).Start()
+
+			url := fmt.Sprintf("https://lotm.otherside.xyz/shattered/otherdeed/%d", id)
+			osType := runtime.GOOS
+			if osType == "windows" {
+				cmd := exec.Command(`cmd`, `/c`, `start`, url)
+				cmd.SysProcAttr = &syscall.SysProcAttr{Foreground: false}
+				cmd.Start()
+			} else if osType == "darwin" {
+				exec.Command(`open`, url).Start()
+			} else {
+				log.Println("unknown os")
+			}
+
 			continue
 		}
 
