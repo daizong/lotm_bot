@@ -12,7 +12,7 @@
 * auth：浏览器开发工具获取http Authorization字段
 * wallet: 钱包的地址
 * monitorInternalMintues： 监控的间隔分钟数值
-* processLog: 输出关卡进度的最小值s
+* processLog: 输出关卡进度的最小值
 
 ----
 ### chrome如何获取auth
