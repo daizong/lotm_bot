@@ -1,0 +1,6 @@
+{
+    "auth": "Bearer ......",
+    "wallet": "0x......",
+    "monitorInternalMintues": 5,
+    "processLog": 80.0
+}
