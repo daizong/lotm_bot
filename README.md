@@ -15,6 +15,11 @@
 * processLog: 输出关卡进度的最小值s
 
 ----
+### chrome如何获取auth
+打开lotm主页，打开chrome开发者工具，按照下图获取
+![chrome获取auth](./doc/howToGetAuth.png)
+
+----
 ### 启动
 
 #### ./bin/lotm_bot
