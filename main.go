@@ -7,11 +7,8 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
-	"os/exec"
-	"runtime"
 	"strconv"
 	"strings"
-	"syscall"
 	"time"
 
 	browser "github.com/EDDYCJY/fake-useragent"
@@ -151,17 +148,17 @@ func startMonitor() {
 		if len(gjson.GetBytes(boxes, "result.data.json").Array()) > 0 {
 			log.Printf("[%d]有未领取宝箱，游戏链接: https://lotm.otherside.xyz/shattered/otherdeed/%d", otherdeedId, otherdeedId)
 
-			url := fmt.Sprintf("https://lotm.otherside.xyz/shattered/otherdeed/%d", otherdeedId)
-			osType := runtime.GOOS
-			if osType == "windows" {
-				cmd := exec.Command(`cmd`, `/c`, `start`, url)
-				cmd.SysProcAttr = &syscall.SysProcAttr{Foreground: false}
-				cmd.Start()
-			} else if osType == "darwin" {
-				exec.Command(`open`, url).Start()
-			} else {
-				log.Println("unknown os")
-			}
+			// url := fmt.Sprintf("https://lotm.otherside.xyz/shattered/otherdeed/%d", otherdeedId)
+			// osType := runtime.GOOS
+			// if osType == "windows" {
+			// 	cmd := exec.Command(`cmd`, `/c`, `start`, url)
+			// 	cmd.SysProcAttr = &syscall.SysProcAttr{Foreground: false}
+			// 	cmd.Start()
+			// } else if osType == "darwin" {
+			// 	exec.Command(`open`, url).Start()
+			// } else {
+			// 	log.Println("unknown os")
+			// }
 
 			continue
 		}
