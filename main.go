@@ -45,8 +45,6 @@ func main() {
 }
 
 func startMonitor() {
-	processes := map[int]float64{}
-
 	datas, err := GetDefaultData("GET", fmt.Sprintf(`%s/currency.getMystBalance,otherdeed.getOtherdeeds,oda.getOdaInventory?batch=1&input={"0":{"json":null,"meta":{"values":["undefined"]}},"1":{"json":null,"meta":{"values":["undefined"]}},"2":{"json":null,"meta":{"values":["undefined"]}}}`, api_url), "", map[string]string{})
 	if err != nil {
 		log.Println(err)
@@ -77,6 +75,9 @@ func startMonitor() {
 	}
 
 	log.Println("otherdeed数量:", len(ides))
+
+	processes := map[int]float64{}
+	odaTokenIdes := map[string]int{}
 	for _, idInfo := range ides {
 		otherdeedId := int(idInfo.Get("id").Int())
 		envTier := idInfo.Get("envTier").Int()
@@ -123,9 +124,11 @@ func startMonitor() {
 		creatures := gjson.GetBytes(sessionBytes, "result.data.json.creatures").Array()
 		for _, creature := range creatures {
 			creatureId := creature.Get("id").String()
+			odaTokenId := creature.Get("odaTokenId").Int()
 			abilities := creature.Get("abilities").Array()
 			abilityCount += len(abilities)
 
+			odaTokenIdes[creatureId] = int(odaTokenId)
 			abilityIdes[creatureId] = []string{}
 			for _, ability := range abilities {
 				abilityId := ability.Get("id").String()
@@ -178,6 +181,10 @@ func startMonitor() {
 		status := gjson.GetBytes(sessionInfo, "result.data.json.status").String()
 		season_id := gjson.GetBytes(sessionInfo, "result.data.json.season_id").String()
 		creature_ability_cooldowns := gjson.GetBytes(sessionInfo, "result.data.json.creature_ability_cooldowns").Array()
+		if len(status) == 0 {
+			log.Println(string(sessionInfo))
+			continue
+		}
 		if !strings.EqualFold(status, "ON_GOING") {
 			log.Println(string(sessionInfo))
 			log.Printf("[%d]status is %s, 游戏链接: https://lotm.otherside.xyz/shattered/otherdeed/%d", otherdeedId, status, otherdeedId)
@@ -217,10 +224,10 @@ func startMonitor() {
 
 					serverProcessTimeMillisecond := gjson.GetBytes(gamePlayInfo, "result.data.json.serverProcessTimeMillisecond").Int()
 					if serverProcessTimeMillisecond == 0 {
-						log.Printf("[%d]运行[%s]技能[%s]失败，游戏链接: https://lotm.otherside.xyz/shattered/otherdeed/%d", otherdeedId, cardId, abilityId, otherdeedId)
+						log.Printf("[%d]-[%d]运行技能[%s]失败，游戏链接: https://lotm.otherside.xyz/shattered/otherdeed/%d", otherdeedId, odaTokenIdes[cardId], abilityId, otherdeedId)
 						log.Println(string(gamePlayInfo))
 					} else {
-						log.Printf("运行[%s]技能[%s]成功", cardId, abilityId)
+						log.Printf("[%d]-[%d]运行技能[%s]成功", otherdeedId, odaTokenIdes[cardId], abilityId)
 					}
 				}
 			}
