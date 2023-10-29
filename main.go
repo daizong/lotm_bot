@@ -91,6 +91,7 @@ func startMonitor() {
 		process := idInfo.Get("goliathProgress").Float()
 		processes[id] = process
 
+		time.Sleep(time.Millisecond * 100)
 		sessionBytes, err := GetDefaultData("POST", api_url+"/land.login", `{
 			"json": null,
 			"meta": {
@@ -132,6 +133,7 @@ func startMonitor() {
 			}
 		}
 
+		time.Sleep(time.Millisecond * 100)
 		boxes, err := GetDefaultData("POST", api_url+"/treasure.getUnclaimedChests", fmt.Sprintf(`{
 			"json": {
 			  "sessionToken": "%s"
@@ -161,6 +163,7 @@ func startMonitor() {
 			continue
 		}
 
+		time.Sleep(time.Millisecond * 100)
 		sessionInfo, err := GetDefaultData("POST", api_url+"/land.getSessionById", fmt.Sprintf(`{
 			"json": {
 			  "sessionToken": "%s"
