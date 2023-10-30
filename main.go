@@ -246,12 +246,15 @@ func startMonitor() {
 		for _, rank := range ranks {
 			players := rank.Get("players").Array()
 			for _, player := range players {
-				walletAddress := player.Get("walletAddress").String()
+				landTokenId := player.Get("landTokenId").Int()
+				if landTokenId != int64(otherdeedId) {
+					continue
+				}
 				process := player.Get("currentProgress").Float()
 				currentProgressTime := player.Get("currentProgressTime").Int()
 				totalKills := player.Get("totalKills").Int()
 				hours := currentProgressTime / 1000 / 60 / 60
-				if strings.EqualFold(walletAddress, wallet_addr) && (process > processLog /*|| totalKills > 0*/) {
+				if process > processLog /*|| totalKills > 0*/ {
 					log.Printf("[%d]关卡: %d, 进度: %.2f%%, 时间: %d天%d小时, 环境: %d", otherdeedId, totalKills+1, process, hours/24, hours%24, envTier)
 
 					break
