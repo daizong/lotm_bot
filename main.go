@@ -18,24 +18,23 @@ import (
 var api_url = "https://lotm.otherside.xyz/api/trpc"
 
 var auth = ""
-var wallet_addr = ""
 var processLog = 80.0
 
 func main() {
 	log.SetFlags(log.Ldate | log.Ltime /*| log.Lshortfile*/)
 
-	buf, err := ioutil.ReadFile("./config.json")
-	if err != nil {
-		log.Println(err)
-		return
-	}
-	config := string(buf)
-	auth = gjson.Get(config, "auth").String()
-	wallet_addr = gjson.Get(config, "wallet").String()
-	monitorIntervalMintues := gjson.Get(config, "monitorIntervalMintues").Int()
-	processLog = gjson.Get(config, "processLog").Float()
-
 	for {
+
+		buf, err := ioutil.ReadFile("./config.json")
+		if err != nil {
+			log.Println(err)
+			return
+		}
+		config := string(buf)
+		auth = gjson.Get(config, "auth").String()
+		monitorIntervalMintues := gjson.Get(config, "monitorIntervalMintues").Int()
+		processLog = gjson.Get(config, "processLog").Float()
+
 		startMonitor()
 		time.Sleep(time.Minute * time.Duration(monitorIntervalMintues))
 	}
