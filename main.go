@@ -75,6 +75,10 @@ func startMonitor() {
 	processes := map[int]float64{}
 	odaTokenIdes := map[string]int{}
 	for _, idInfo := range ides {
+		isLegacy := idInfo.Get("isLegacy").Bool()
+		if isLegacy {
+			continue
+		}
 		otherdeedId := int(idInfo.Get("id").Int())
 		envTier := idInfo.Get("envTier").Int()
 		envSlots := idInfo.Get("envSlots").Array()
