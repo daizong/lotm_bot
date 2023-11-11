@@ -206,6 +206,7 @@ func startMonitor() {
 		for cardId, abilities := range abilityIdes {
 			for _, abilityId := range abilities {
 				if cooldownAbilitess[cardId] == nil || !cooldownAbilitess[cardId][abilityId] {
+					//if strings.Contains(abilityId, "direct_damage") || strings.Contains(abilityId, "damage_over_time") {
 					time.Sleep(time.Millisecond * 100)
 					gamePlayInfo, err := GetDefaultData("POST", api_url+"/gameplay.cast", fmt.Sprintf(`{
 						"json": {
@@ -229,6 +230,10 @@ func startMonitor() {
 					} else {
 						log.Printf("[%d]-[%d]运行技能[%s]成功", otherdeedId, odaTokenIdes[cardId], abilityId)
 					}
+					// } else {
+					// 	log.Printf("[%d]-[%d]技能[%s]可以运行，游戏链接: https://lotm.otherside.xyz/shattered/otherdeed/%d", otherdeedId, odaTokenIdes[cardId], abilityId, otherdeedId)
+
+					// }
 				}
 			}
 		}
